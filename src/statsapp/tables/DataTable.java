@@ -3,12 +3,14 @@ package statsapp.tables;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
 import statsapp.data.records.TableRecord;
+import statsapp.tables.cells.EditableCell;
 
 /**
  *
@@ -34,7 +36,7 @@ public class DataTable extends TableView
         for(final String colName : colNames)
         {
             TableColumn column = new TableColumn(colName);
-
+            
             column.setCellValueFactory(
                     new Callback<CellDataFeatures<TableRecord, Object>,
                     ObservableValue<Object>>()
@@ -48,15 +50,30 @@ public class DataTable extends TableView
                             .getField(colName);
                 }
             });
+            Callback<TableColumn, TableCell> cellFactory =
+                    new Callback<TableColumn, TableCell>()
+                    {
+                        @Override
+                        public TableCell call(TableColumn col)
+                        {
+                            return new EditableCell();
+                        }
+                    };
+            column.setCellFactory(cellFactory);
+            
             column.setOnEditCommit(
                 new EventHandler<CellEditEvent<TableRecord, Object>>()
                 {
                     @Override
                     public void handle(CellEditEvent<TableRecord, Object> t)
                     {
-                        ((TableRecord) t.getTableView().getItems().get(
-                            t.getTablePosition().getRow())
-                        ).getRecordData().setFieldValue(colName, t.getNewValue());
+                        TableRecord tableRecord = ((TableRecord)
+                                t.getTableView().getItems().get(
+                                        t.getTablePosition().getRow()
+                                ));
+                        tableRecord.getRecordData().setFieldValue(
+                                colName, t.getNewValue()
+                        );
                     }
                 }
             );
