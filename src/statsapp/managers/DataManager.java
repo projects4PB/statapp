@@ -11,7 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import statsapp.data.TableData;
 import statsapp.data.records.TableRecord;
-import statsapp.loaders.DataLoader;
+import statsapp.loaders.TextFileLoader;
 import statsapp.models.Division;
 import statsapp.tables.DataTable;
 
@@ -27,11 +27,11 @@ public class DataManager
     
     private TableData tableData;
     
-    private DataLoader dataLoader;
+    private TextFileLoader dataLoader;
     
     private DataTable dataTable;
     
-    private DataManager(DataLoader dataLoader)
+    private DataManager(TextFileLoader dataLoader)
     {
         this.dataLoader = dataLoader;
         
@@ -46,19 +46,19 @@ public class DataManager
             {
                 if(instance == null)
                 {
-                    instance = new DataManager(new DataLoader());
+                    instance = new DataManager(new TextFileLoader());
                 }
             }
         }
         return instance;
     }
     
-    public void setDataLoader(DataLoader dataLoader)
+    public void setDataLoader(TextFileLoader dataLoader)
     {
         this.dataLoader = dataLoader;
     }
     
-    public DataLoader getDataLoader()
+    public TextFileLoader getDataLoader()
     {
         return this.dataLoader;
     }

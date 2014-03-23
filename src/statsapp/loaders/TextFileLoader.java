@@ -12,7 +12,7 @@ import statsapp.data.TableData;
  *
  * @author Adrian Olszewski
  */
-public class DataLoader implements Loader
+public class TextFileLoader implements Loader
 {
     @Override
     public TableData loadData(String filePath)
