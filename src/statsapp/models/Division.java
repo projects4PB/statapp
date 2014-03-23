@@ -2,7 +2,7 @@ package statsapp.models;
 
 /**
  *
- * @author Adrian Olszewski
+ * @author Adrian Olszewski, Dariusz Obuchowski
  */
 public class Division
 {
