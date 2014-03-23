@@ -17,7 +17,7 @@ import statsapp.tables.DataTable;
 
 /**
  *
- * @author Adrian Olszewski
+ * @author Adrian Olszewski, Dariusz Obuchowski
  */
 public class DataManager
 {
