@@ -1,17 +1,18 @@
 package statsapp.panels;
 
 import java.io.File;
-import javafx.application.Platform;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
+
 import statsapp.data.TableData;
 import statsapp.managers.DataManager;
+import statsapp.popups.ChartPopup;
 import statsapp.popups.DiscretizationPopup;
 import statsapp.popups.StatisticsPopup;
 import statsapp.tables.DataTable;
@@ -90,6 +91,18 @@ public class RootPanel extends GridPane
             }
         });
         
+		MenuItem chart2D = new MenuItem("Wykres 2D");
+        chart2D.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+                ChartPopup popup = new ChartPopup();
+
+                popup.show(getScene().getWindow());
+            }
+        });
+
         MenuItem statistics = new MenuItem("Statystyki");
         statistics.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -104,6 +117,7 @@ public class RootPanel extends GridPane
         });
         
         editMenu.getItems().addAll(
+				chart2D,
                 discretization,
                 statistics
                 );
