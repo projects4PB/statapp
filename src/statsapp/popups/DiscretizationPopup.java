@@ -93,5 +93,6 @@ public class DiscretizationPopup extends BasePopup
         //dManager.divideValues("values", 3);
         
         //dManager.getStandardization("seplen");
+          dManager.mapColumValues("seplen", 3.0f, 5.0f);
     }
 }

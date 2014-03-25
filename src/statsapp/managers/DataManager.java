@@ -123,7 +123,7 @@ public class DataManager
         }
     }
     
-    private void updateColumnData(String col_id, List<Object> colData)
+    public void updateColumnData(String col_id, List<Object> colData)
     {
         for(int i = 0; i < this.dataList.size(); i++)
         {
@@ -345,12 +345,12 @@ public class DataManager
                 * (float) sortedValues.get(iValue + 1);
     }
 
-	public  void getStandardization(String col_id)
+    public void getStandardization(String col_id)
     {           
         ArrayList<Object> colData  = this.getColumnData(col_id);
         ArrayList<Object> resultData = new ArrayList<>();
         
-		float average = getAverage(col_id);
+        float average = getAverage(col_id);
         float standardDeviation = getStandardDeviation(col_id);
         float standardizationValue = 0;
         
@@ -359,6 +359,7 @@ public class DataManager
             standardizationValue = ((float)obj - average) / standardDeviation;
             resultData.add((Object)standardizationValue);
         }
+        
         setLastColumnData("std_" + col_id, resultData );
         dataTable.addColumn("std_" + col_id);
     }
@@ -367,7 +368,7 @@ public class DataManager
     {
         ArrayList<Object> colData  = this.getColumnData(col_id);
         
-		float average = getAverage(col_id);
+	float average = getAverage(col_id);
         float counterVariation = 0;
         float valueColumn = 0; 
         
@@ -378,9 +379,32 @@ public class DataManager
 					2, valueColumn - average
 			);
         }
+        
         float variation = counterVariation / colData.size();
                
         return  (float) Math.sqrt(variation);
+    }
+    
+    public void mapColumValues(String col_id, float minVal, float maxVal)
+    {
+        float min = getMinValue(col_id);
+        float max = getMaxValue(col_id);
+        float mappedValue = 0;
+        ArrayList<Object> colData = this.getColumnData(col_id);
+        ArrayList<Object> resultData = new ArrayList<>();
+        
+        for(Object obj : colData)
+        {
+             mappedValue = this.map((float)obj, min, max, minVal, maxVal);
+             resultData.add(mappedValue);
+        }
+        
+        this.updateColumnData(col_id, resultData);
+    }
+    
+    public float map(float x, float in_min, float in_max, float out_min, float out_max)
+    {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
     
     public void digitizeValues(String col_id)
