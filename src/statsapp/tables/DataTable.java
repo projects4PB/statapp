@@ -84,47 +84,75 @@ public class DataTable extends TableView
         }
     }
     
-    public void addColumn(String colName)
+    public void addColumn(final String colName)
     {
         final TableColumn column = new TableColumn(colName);
         
+		column.setCellValueFactory(
+				new Callback<CellDataFeatures<TableRecord, Object>,
+				ObservableValue<Object>>()
+		{
+			@Override
+			public ObservableValue<Object> call(
+					CellDataFeatures<TableRecord, Object> tableRecord
+			) {
+				return tableRecord.getValue()
+						.getRecordData()
+						.getField(colName);
+			}
+		});
+		Callback<TableColumn, TableCell> cellFactory =
+				new Callback<TableColumn, TableCell>()
+				{
+					@Override
+					public TableCell call(TableColumn col)
+					{
+						return new EditableCell();
+					}
+				};
+		column.setCellFactory(cellFactory);
+		
+		column.setOnEditCommit(
+			new EventHandler<CellEditEvent<TableRecord, Object>>()
+			{
+				@Override
+				public void handle(CellEditEvent<TableRecord, Object> t)
+				{
+					TableRecord tableRecord = ((TableRecord)
+							t.getTableView().getItems().get(
+									t.getTablePosition().getRow()
+							));
+					tableRecord.getRecordData().setFieldValue(
+							colName, t.getNewValue()
+					);
+				}
+			}
+		);
         column.setId(colName);
         
-        new Thread(new Runnable()
-        {
-            @Override public void run()
-            {
-                Platform.runLater(new Runnable()
-                {
-                    @Override public void run()
-                    {
-                        getColumns().add(column);
-                    }
-                });
-            }
-        }).start();
+		Platform.runLater(new Runnable()
+		{
+			@Override public void run()
+			{
+				getColumns().add(column);
+			}
+		});
     }
     
     public void removeColumn(final String colName)
     {
-        new Thread(new Runnable()
-        {
-            @Override public void run()
-            {
-                Platform.runLater(new Runnable()
-                {
-                    @Override public void run()
-                    {
-                        for(Object tableCol : getColumns())
-                        {
-                            if(((TableColumn) tableCol).getId().equals(colName))
-                            {
-                                getColumns().remove(tableCol);
-                            }
-                        }
-                    }
-                });
-            }
-        }).start();
+		Platform.runLater(new Runnable()
+		{
+			@Override public void run()
+			{
+				for(Object tableCol : getColumns())
+				{
+					if(((TableColumn) tableCol).getId().equals(colName))
+					{
+						getColumns().remove(tableCol);
+					}
+				}
+			}
+		});
     }
 }
