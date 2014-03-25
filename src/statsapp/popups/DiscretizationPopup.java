@@ -1,13 +1,17 @@
 package statsapp.popups;
 
+import java.util.ArrayList;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+
+import statsapp.data.records.TableRecord;
 import statsapp.managers.DataManager;
-import statsapp.tables.DataTable;
 
 /**
  *
@@ -50,10 +54,16 @@ public class DiscretizationPopup extends BasePopup
             public void handle(ActionEvent e)
             {
                 DataManager dManager = DataManager.getInstance();
-                
-                DataTable dataTable = dManager.getDataTable();
-                
-                dataTable.addColumn("DYSKRETYZACJA");
+
+				ArrayList<Object> colData = new ArrayList<>();
+				for(int i = 0; i < dManager.getDataList().size(); i++)
+				{
+					colData.add(3.0f);
+				}
+				dManager.setLastColumnData("std_", colData);
+
+				dManager.getDataTable().addColumn("std_");
+
                 
                 hide();
             }
@@ -83,5 +93,7 @@ public class DiscretizationPopup extends BasePopup
         //dManager.divideValues("values", 3);
         
         //dManager.groupByValueAmount("values", 3);
+
+
     }
 }

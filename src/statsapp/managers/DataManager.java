@@ -113,6 +113,16 @@ public class DataManager
         return columnData;
     }
     
+	public void setLastColumnData(String col_id, ArrayList<Object> colData)
+    {
+        for(int i = 0; i < this.dataList.size(); i++)
+        {
+            TableRecord tableRecord = (TableRecord) this.dataList.get(i);
+            
+            tableRecord.getRecordData().addField(col_id, colData.get(i));
+        }
+	}
+    
     private void updateColumnData(String col_id, List<Object> colData)
     {
         for(int i = 0; i < this.dataList.size(); i++)

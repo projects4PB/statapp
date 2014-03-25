@@ -34,6 +34,11 @@ public class RecordData
         return new SimpleStringProperty((String) fieldProperty);
     }
     
+    public void addField(String colName, Object value)
+    {
+        this.fields.put(colName, value);
+    }
+
     public void setFieldValue(String colName, Object value)
     {
         this.fields.put(colName, value);
