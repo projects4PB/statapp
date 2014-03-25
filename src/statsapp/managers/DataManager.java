@@ -344,6 +344,44 @@ public class DataManager
                 + (tValue - iValue)
                 * (float) sortedValues.get(iValue + 1);
     }
+
+	public  void getStandardization(String col_id)
+    {           
+        ArrayList<Object> colData  = this.getColumnData(col_id);
+        ArrayList<Object> resultData = new ArrayList<>();
+        
+		float average = getAverage(col_id);
+        float standardDeviation = getStandardDeviation(col_id);
+        float standardizationValue = 0;
+        
+        for(Object obj : colData)
+        {
+            standardizationValue = ((float)obj - average) / standardDeviation;
+            resultData.add((Object)standardizationValue);
+        }
+        setLastColumnData("std_" + col_id, resultData );
+        dataTable.addColumn("std_" + col_id);
+    }
+     
+    public float getStandardDeviation(String col_id)
+    {
+        ArrayList<Object> colData  = this.getColumnData(col_id);
+        
+		float average = getAverage(col_id);
+        float counterVariation = 0;
+        float valueColumn = 0; 
+        
+        for(Object obj : colData)
+        {
+            valueColumn = (float) obj;
+            counterVariation += Math.pow(
+					2, valueColumn - average
+			);
+        }
+        float variation = counterVariation / colData.size();
+               
+        return  (float) Math.sqrt(variation);
+    }
     
     public void digitizeValues(String col_id)
     {
