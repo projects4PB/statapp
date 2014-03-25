@@ -113,7 +113,7 @@ public class DataManager
         return columnData;
     }
     
-	public void setLastColumnData(String col_id, ArrayList<Object> colData)
+    public void setLastColumnData(String col_id, ArrayList<Object> colData)
     {
         for(int i = 0; i < this.dataList.size(); i++)
         {
@@ -121,7 +121,7 @@ public class DataManager
             
             tableRecord.getRecordData().addField(col_id, colData.get(i));
         }
-	}
+    }
     
     private void updateColumnData(String col_id, List<Object> colData)
     {
@@ -467,50 +467,5 @@ public class DataManager
         {
             System.out.println(obj.toString());
         }
-    }
-    
-    //standaryzacja
-    public  void getStandardization(String col_id)
-    {
-        dataTable.addColumn("standaryzacja");
-        
-        ArrayList<Object> colData  = this.getColumnData(col_id);
-        ArrayList<Object> resultData = new ArrayList<>();
-        float average = getAverage(col_id);
-        float standardDeviation = getStandardDeviation(col_id);
-        float standardizationValue = 0;
-        
-        for(Object obj : colData)
-        {
-            standardizationValue = ((float)obj - average) / standardDeviation;
-            resultData.add((Object)standardizationValue);
-        }
-        
-        for(int i = 0; i < this.dataList.size(); i++){
-            for(int j = 0; i < this.dataList.size(); i++)
-            {
-                if(i == j )
-            }
-        }
-    }
-     
-    //odchylenie standardowe
-    public float getStandardDeviation(String col_id)
-    {
-        float average = getAverage(col_id);
-        ArrayList<Object> colData  = this.getColumnData(col_id);
-        float variation = 0;
-        float valueColumn = 0; 
-        float counterVariation = 0;
-        
-        for(Object obj : colData)
-        {
-            valueColumn = (float)obj;
-            counterVariation += Math.pow(2,valueColumn - average);
-        }
-        
-        variation = counterVariation / colData.size();
-               
-        return  (float) Math.sqrt(average);
     }
 }
