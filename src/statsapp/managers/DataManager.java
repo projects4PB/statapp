@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import statsapp.data.TableData;
 import statsapp.data.records.TableRecord;
+import statsapp.loaders.ExcelFileLoader;
 import statsapp.loaders.TextFileLoader;
 import statsapp.models.Division;
 import statsapp.tables.DataTable;
@@ -28,6 +29,8 @@ public class DataManager
     private TableData tableData;
     
     private TextFileLoader dataLoader;
+    
+    private ExcelFileLoader dataExelLoader;
     
     private DataTable dataTable;
     
@@ -88,6 +91,15 @@ public class DataManager
     public TableData loadData(String fileName)
     {
         this.tableData = this.dataLoader.loadData(fileName);
+        
+        this.dataList.addAll(tableData.getRecords());
+        
+        return tableData;
+    }
+    
+    public TableData loadExcelData(String fileName)
+    {
+        this.tableData = this.dataExelLoader.loadData(fileName);
         
         this.dataList.addAll(tableData.getRecords());
         

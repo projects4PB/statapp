@@ -1,6 +1,7 @@
 package statsapp.panels;
 
 import java.io.File;
+import java.nio.file.Files;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -50,17 +51,34 @@ public class RootPanel extends GridPane
                 File file = fileChooser.showOpenDialog(
                         getScene().getWindow()
                 );
+                
                 if(file != null)
                 {
-                    TableData tableData =
-                            dManager.loadData(
-                                    file.getAbsolutePath()
-                            );
+                    TableData tableData = null;
+                    int index = file.getAbsolutePath().lastIndexOf('.');
+                    String extension = "";
+                    
+                    if(index > 0 ){
+                        extension =  file.getAbsolutePath().substring(index+1);
+                    }
+                    
+                    if(extension.equals("xlsx") || extension.equals("xls") ){
+                        tableData = dManager.loadExcelData(
+                                        file.getAbsolutePath()
+                                    );  
+                    }
+                    
+                    else{
+                        tableData = dManager.loadData(
+                                        file.getAbsolutePath()
+                                    );
+                    }
+                    
                     DataTable dataTabel = dManager
                             .createDataTable(tableData);
 
                     add(dataTabel, 0, 1);
-                }
+                }               
             }
         });
         
