@@ -26,3 +26,7 @@
     -fx-background-color: linear-gradient(
         rgb(0, 160, 220), rgb(0, 125, 220));
 }
+.chart {
+	-fx-padding: 20px;
+	-fx-background-color: rgba(0, 125, 220, 0.5);
+}

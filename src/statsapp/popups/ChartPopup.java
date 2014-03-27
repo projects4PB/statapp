@@ -1,9 +1,13 @@
 package statsapp.popups;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 public class ChartPopup extends BasePopup
 {
@@ -18,6 +22,9 @@ public class ChartPopup extends BasePopup
         xAxis.setLabel("Age (years)");                
         yAxis.setLabel("Returns to date");
         sc.setTitle("Investment Overview");
+
+		sc.getStylesheets().add("/statsapp/popups/css/popups.css");
+		sc.getStyleClass().add("chart");
        
         XYChart.Series series1 = new XYChart.Series();
         series1.setName("Equities");
@@ -52,6 +59,19 @@ public class ChartPopup extends BasePopup
  
         sc.getData().addAll(series1, series2);
 
-		this.getContent().add(sc);
+		VBox vBox = new VBox();
+
+		Button closeButton = new Button("X");
+        closeButton.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+                hide();
+            }
+        });
+        closeButton.setPrefSize(25, 25);
+
+		this.getContent().addAll(sc, closeButton);
 	}
 }

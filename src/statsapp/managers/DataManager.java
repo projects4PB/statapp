@@ -135,7 +135,7 @@ public class DataManager
         }
     }
     
-    public void updateColumnData(String col_id, List<Object> colData)
+	private void updateColumnData(String col_id, List<Object> colData)
     {
         for(int i = 0; i < this.dataList.size(); i++)
         {
@@ -414,7 +414,7 @@ public class DataManager
         this.updateColumnData(col_id, resultData);
     }
     
-    public float map(float x, float in_min, float in_max, float out_min, float out_max)
+    private float map(float x, float in_min, float in_max, float out_min, float out_max)
     {
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
