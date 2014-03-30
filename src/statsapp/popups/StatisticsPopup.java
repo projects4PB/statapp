@@ -3,7 +3,10 @@ package statsapp.popups;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.event.EventType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -66,6 +69,21 @@ public class StatisticsPopup extends BasePopup
         contentPane.add(this.detailsPanel, 0, 2, 2, 1);
         
         this.getContent().add(contentPane);
+        
+        
+        Button cancelButton = new Button("ANULUJ");
+        cancelButton.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+                hide();
+            }
+        });
+        
+        cancelButton.setPrefSize(185, 25);
+        contentPane.add(cancelButton, 0, 5);  
+        
     }
     
     private void showDetails(String col_id)
