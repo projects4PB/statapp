@@ -84,6 +84,11 @@ public class DataManager
         return this.dataTable;
     }
     
+    public TableData getTableData()
+    {
+        return this.tableData;
+    }
+    
     public TableData loadData(String fileName)
     {
         this.tableData = dataLoader.loadData(fileName);

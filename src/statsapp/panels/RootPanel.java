@@ -9,6 +9,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import statsapp.data.TableData;
 import statsapp.loaders.ExcelFileLoader;
@@ -17,6 +18,7 @@ import statsapp.managers.DataManager;
 import statsapp.popups.ChartPopup;
 import statsapp.popups.DiscretizationPopup;
 import statsapp.popups.StatisticsPopup;
+import statsapp.savers.DataSaver;
 import statsapp.tables.DataTable;
 
 /**
@@ -88,6 +90,23 @@ public class RootPanel extends GridPane
             }
         });
         
+        MenuItem save = new MenuItem("Zapisz");
+        final Stage primaryStage = null;
+        final DataSaver dataSaver = new DataSaver();
+        save.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+                FileChooser fileChooser = new FileChooser();
+                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+                fileChooser.getExtensionFilters().add(extFilter);
+                File file = fileChooser.showSaveDialog(primaryStage) ;   
+                dataSaver.saveToFile(file.getAbsolutePath());
+                
+            }
+        });
+        
         MenuItem exit = new MenuItem("Zakończ");
         exit.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -98,7 +117,7 @@ public class RootPanel extends GridPane
             }
         });
         
-        fileMenu.getItems().addAll(load, exit);
+        fileMenu.getItems().addAll(load, save, exit);
         
         Menu editMenu = new Menu("Edycja");
         
