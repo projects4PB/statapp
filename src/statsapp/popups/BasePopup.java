@@ -14,7 +14,7 @@ abstract public class BasePopup extends Popup
     
     private final Label titleLabel = new Label();
     
-    private static final String POPUPS_STYLESHEET
+    protected static final String POPUPS_STYLESHEET
             = "/statsapp/popups/css/popups.css";
     
     public BasePopup(Parent rootNode, String title)

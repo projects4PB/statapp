@@ -44,7 +44,7 @@ public class DataManager
     
     public static DataManager getInstance()
     {
-        if (instance == null)
+        if(instance == null)
         {
             synchronized(DataManager.class)
             {
@@ -458,13 +458,15 @@ public class DataManager
             
             float endValue = startValue + divisionSize;
             
-            if(i == numOfDivisions - 1) endValue = maxValue;
+            if(i == numOfDivisions - 1) endValue = maxValue + 0.1f;
             
             divisions.add(new Division(i + 1, startValue, endValue));
         }
         
         ArrayList<Object> colData = this.getColumnData(col_id);
         
+		ArrayList<Object> resultsData = new ArrayList<>();
+
         for(Object obj : colData)
         {
             for(Division division : divisions)
@@ -474,13 +476,18 @@ public class DataManager
                 if(value >= division.getStartValue()
                         && value < division.getEndValue())
                 {
-                    System.out.println(division.getDivisionID());
+					resultsData.add((Object)
+							division.getDivisionID()
+					);
                 }
             }
         }
+		this.setLastColumnData("div_" + col_id, resultsData);
+
+		this.dataTable.addColumn("div_" + col_id);
     }
     
-    public void groupByValueAmount(String col_id, int numOfgroups)
+    public void groupByValueAmount(String col_id, int numOfGroups)
     {
         ArrayList<Object> colData = this.getColumnData(col_id);
         
@@ -495,29 +502,44 @@ public class DataManager
             }
             else valuesAmounts.put(obj, 1);
         }
-        
         HashMap<Object, Integer> groupsIDs = new HashMap<>();
 
         int groupID = 0;
         
         Iterator<Object> iterator = valuesAmounts.keySet().iterator();
         
-        while(iterator.hasNext() && groupID <= numOfgroups)
+		int prevValueAmount = -1;
+
+        while(groupID < numOfGroups)
         {
-            Object obj = iterator.next();
+			while(iterator.hasNext())
+			{
+				Object obj = iterator.next();
             
-            int maxValueAmount = Collections.max(
-                    valuesAmounts.values()
-            );
-       
-            if(valuesAmounts.get(obj) == maxValueAmount)
-            {
-                groupsIDs.put(obj, ++groupID);
+				int maxValueAmount = Collections.max(
+					    valuesAmounts.values()
+				);
+				if(valuesAmounts.get(obj) == maxValueAmount)
+				{
+					if(maxValueAmount == prevValueAmount)
+					{
+						groupsIDs.put(obj, groupID);
+					
+						valuesAmounts.remove(obj);
+
+						continue;
+					}
+					groupsIDs.put(obj, ++groupID);
                 
-                valuesAmounts.remove(obj);
-            }
-        }
-        
+					valuesAmounts.remove(obj);
+				
+					prevValueAmount = maxValueAmount;
+				}
+			}
+			if(valuesAmounts.size() == 0) break;
+
+			iterator = valuesAmounts.keySet().iterator();
+		}
         ArrayList<Object> resultData = new ArrayList<>();
         
         for(Object obj : colData)
@@ -526,12 +548,10 @@ public class DataManager
             {
                 resultData.add(groupsIDs.get(obj));
             }
-            else resultData.add(numOfgroups + 1);
+            else resultData.add(numOfGroups + 1);
         }
-        
-        for(Object obj : resultData)
-        {
-            System.out.println(obj.toString());
-        }
+		this.setLastColumnData("grp_" + col_id, resultData);
+
+		this.dataTable.addColumn("grp_" + col_id);	
     }
 }

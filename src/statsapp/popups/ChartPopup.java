@@ -1,65 +1,40 @@
 package statsapp.popups;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+
+import statsapp.data.RecordData;
+import statsapp.data.records.TableRecord;
+import statsapp.managers.DataManager;
 
 public class ChartPopup extends BasePopup
 {
+	private DataManager dManager = DataManager.getInstance();
+
+	// Pierwsza zmienna
+	private static String FIRST_COLUMN = "";
+
+	// Druga zmienna
+	private static String SECOND_COLUMN = "";
+
 	public ChartPopup()
 	{
 		super(new StackPane(), "WYKRES");
-
-		final NumberAxis xAxis = new NumberAxis(0, 10, 1);
-        final NumberAxis yAxis = new NumberAxis(-100, 500, 100);        
-        final ScatterChart<Number,Number> sc = new
-            ScatterChart<Number,Number>(xAxis,yAxis);
-        xAxis.setLabel("Age (years)");                
-        yAxis.setLabel("Returns to date");
-        sc.setTitle("Investment Overview");
-
-		sc.getStylesheets().add("/statsapp/popups/css/popups.css");
-		sc.getStyleClass().add("chart");
-       
-        XYChart.Series series1 = new XYChart.Series();
-        series1.setName("Equities");
-        series1.getData().add(new XYChart.Data(4.2, 193.2));
-        series1.getData().add(new XYChart.Data(2.8, 33.6));
-        series1.getData().add(new XYChart.Data(6.2, 24.8));
-        series1.getData().add(new XYChart.Data(1, 14));
-        series1.getData().add(new XYChart.Data(1.2, 26.4));
-        series1.getData().add(new XYChart.Data(4.4, 114.4));
-        series1.getData().add(new XYChart.Data(8.5, 323));
-        series1.getData().add(new XYChart.Data(6.9, 289.8));
-        series1.getData().add(new XYChart.Data(9.9, 287.1));
-        series1.getData().add(new XYChart.Data(0.9, -9));
-        series1.getData().add(new XYChart.Data(3.2, 150.8));
-        series1.getData().add(new XYChart.Data(4.8, 20.8));
-        series1.getData().add(new XYChart.Data(7.3, -42.3));
-        series1.getData().add(new XYChart.Data(1.8, 81.4));
-        series1.getData().add(new XYChart.Data(7.3, 110.3));
-        series1.getData().add(new XYChart.Data(2.7, 41.2));
-        
-        XYChart.Series series2 = new XYChart.Series();
-        series2.setName("Mutual funds");
-        series2.getData().add(new XYChart.Data(5.2, 229.2));
-        series2.getData().add(new XYChart.Data(2.4, 37.6));
-        series2.getData().add(new XYChart.Data(3.2, 49.8));
-        series2.getData().add(new XYChart.Data(1.8, 134));
-        series2.getData().add(new XYChart.Data(3.2, 236.2));
-        series2.getData().add(new XYChart.Data(7.4, 114.1));
-        series2.getData().add(new XYChart.Data(3.5, 323));
-        series2.getData().add(new XYChart.Data(9.3, 29.9));
-        series2.getData().add(new XYChart.Data(8.1, 287.4));
- 
-        sc.getData().addAll(series1, series2);
-
-		VBox vBox = new VBox();
 
 		Button closeButton = new Button("X");
         closeButton.setOnAction(new EventHandler<ActionEvent>()
@@ -72,6 +47,171 @@ public class ChartPopup extends BasePopup
         });
         closeButton.setPrefSize(25, 25);
 
-		this.getContent().addAll(sc, closeButton);
+        Label chooseFirstVarLabel = new Label("Zmienna X:");
+        chooseFirstVarLabel.setPrefSize(150, 25);
+    
+		Label chooseSecondVarLabel = new Label("Zmienna Y:");
+        chooseSecondVarLabel.setPrefSize(150, 25);
+        
+        ComboBox<String> firstColumnsBox = new ComboBox<>();
+        firstColumnsBox.valueProperty().addListener(
+				new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue ov,
+				String oldVal, String newVal)
+            {                
+                FIRST_COLUMN = newVal;
+
+				ScatterChart sChart = createChart();
+
+				getContent().set(0, sChart);
+            }    
+        });
+        firstColumnsBox.setPrefSize(150, 25);
+
+        ComboBox<String> secondColumnsBox = new ComboBox<>();
+        secondColumnsBox.valueProperty().addListener(
+				new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue ov,
+				String oldVal, String newVal)
+            {                
+                SECOND_COLUMN = newVal;
+
+				ScatterChart sChart = createChart();
+
+				getContent().set(0, sChart);
+            }    
+        });
+		secondColumnsBox.setPrefSize(150, 25);
+        
+        ObservableList<String> firstColumnsItems =
+			firstColumnsBox.getItems();
+        ObservableList<String> secondColumnsItems =
+			secondColumnsBox.getItems();
+        
+        for(Object col : dManager.getDataTable().getColumns())
+        {
+            firstColumnsItems.add(
+					((TableColumn) col).getId()
+			);
+            secondColumnsItems.add(
+					((TableColumn) col).getId()
+			);
+        }
+		HBox chartTools = new HBox();
+
+		chartTools.getChildren().addAll(
+				closeButton,
+				chooseFirstVarLabel,
+				firstColumnsBox,
+				chooseSecondVarLabel,
+				secondColumnsBox
+		);
+		ScatterChart scatterChart = this.createChart();
+
+		this.getContent().addAll(
+				scatterChart,
+				chartTools
+		);
+	}
+
+	private ScatterChart createChart()
+	{
+		if(FIRST_COLUMN.equals("") ||
+				SECOND_COLUMN.equals(""))
+		{
+			ScatterChart<Number, Number> sChart = new
+				ScatterChart<Number, Number>(
+						new NumberAxis(),
+						new NumberAxis()
+				);
+			sChart.getStylesheets().add(POPUPS_STYLESHEET);
+			sChart.getStyleClass().add("chart");
+			
+			return sChart;
+		}
+		
+		float firstVarMinValue = dManager
+			.getMinValue(FIRST_COLUMN);
+		float firstVarMaxValue = dManager
+			.getMaxValue(FIRST_COLUMN);
+		
+		float secondVarMinValue = dManager
+			.getMinValue(SECOND_COLUMN);
+		float secondVarMaxValue = dManager
+			.getMaxValue(SECOND_COLUMN);
+
+		final NumberAxis xAxis = new NumberAxis(
+				firstVarMinValue,
+				firstVarMaxValue, 1);
+
+		final NumberAxis yAxis = new NumberAxis(
+				secondVarMinValue,
+				secondVarMaxValue, 1);
+        
+        final ScatterChart<Number, Number> sChart = new
+            ScatterChart<Number, Number>(xAxis, yAxis);
+        
+		sChart.setTitle("Wykres zależności dwóch zmiennych");
+		
+		sChart.getStylesheets().add(POPUPS_STYLESHEET);
+		sChart.getStyleClass().add("chart");
+		
+		xAxis.setLabel(FIRST_COLUMN);                
+        yAxis.setLabel(SECOND_COLUMN);
+
+		ArrayList<String> objsClasses = new ArrayList<>();
+
+		HashMap<String, XYChart.Series> dataSeries = new HashMap<>();
+
+		for(Object obj : dManager.getDataList())
+		{
+			TableRecord tableRecord = (TableRecord) obj;
+
+			RecordData recordData = tableRecord.getRecordData();
+
+			String objectClass = recordData
+				.getFields().get("class").toString();
+
+			boolean classExits = false;
+
+			for(String objClass : objsClasses)
+			{
+				if(objectClass.equals(objClass))
+				{
+					classExits = true;
+				}
+			}
+			XYChart.Series series;
+			
+			if(classExits)
+			{
+				series = dataSeries.get(objectClass);
+			}
+			else
+			{
+				XYChart.Series newSeries = new XYChart.Series();
+
+				newSeries.setName(objectClass);
+
+				dataSeries.put(objectClass, newSeries);
+
+				objsClasses.add(objectClass);
+				
+				series = newSeries;
+			}
+			series.getData().add(new XYChart.Data(
+				recordData.getFields().get(FIRST_COLUMN),
+				recordData.getFields().get(SECOND_COLUMN)
+			));
+		}
+		for(XYChart.Series series : dataSeries.values())
+		{
+			sChart.getData().add(series);
+		}
+		return sChart;
 	}
 }

@@ -16,6 +16,7 @@ import statsapp.loaders.ExcelFileLoader;
 import statsapp.loaders.TextFileLoader;
 import statsapp.managers.DataManager;
 import statsapp.popups.ChartPopup;
+import statsapp.popups.CreateObjectPopup;
 import statsapp.popups.DiscretizationPopup;
 import statsapp.popups.StatisticsPopup;
 import statsapp.savers.DataSaver;
@@ -121,6 +122,19 @@ public class RootPanel extends GridPane
         
         Menu editMenu = new Menu("Edycja");
         
+        MenuItem createObject = new MenuItem("Dodaj nowy obiekt");
+        createObject.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+                CreateObjectPopup popup =
+                        new CreateObjectPopup();
+
+                popup.show(getScene().getWindow());
+            }
+        });
+
         MenuItem discretization = new MenuItem("Dyskretyzacja");
         discretization.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -160,6 +174,7 @@ public class RootPanel extends GridPane
         });
         
         editMenu.getItems().addAll(
+				createObject,
 				chart2D,
                 discretization,
                 statistics
