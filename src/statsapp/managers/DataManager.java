@@ -6,12 +6,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
+
 import statsapp.data.TableData;
 import statsapp.data.records.TableRecord;
 import statsapp.loaders.ExcelFileLoader;
+import statsapp.loaders.Loader;
 import statsapp.loaders.TextFileLoader;
 import statsapp.models.Division;
 import statsapp.tables.DataTable;
@@ -28,13 +31,11 @@ public class DataManager
     
     private TableData tableData;
     
-    private TextFileLoader dataLoader;
-    
-    private ExcelFileLoader dataExelLoader;
+    private static Loader dataLoader;
     
     private DataTable dataTable;
     
-    private DataManager(TextFileLoader dataLoader)
+    private DataManager(Loader dataLoader)
     {
         this.dataLoader = dataLoader;
         
@@ -49,23 +50,18 @@ public class DataManager
             {
                 if(instance == null)
                 {
-                    instance = new DataManager(new TextFileLoader());
+                    instance = new DataManager(dataLoader);
                 }
             }
         }
         return instance;
     }
     
-    public void setDataLoader(TextFileLoader dataLoader)
+    public static void setDataLoader(Loader loader)
     {
-        this.dataLoader = dataLoader;
+        dataLoader = loader;
     }
-    
-    public TextFileLoader getDataLoader()
-    {
-        return this.dataLoader;
-    }
-    
+
     public ObservableList getDataList()
     {
         return this.dataList;
@@ -90,23 +86,14 @@ public class DataManager
     
     public TableData loadData(String fileName)
     {
-        this.tableData = this.dataLoader.loadData(fileName);
+        this.tableData = dataLoader.loadData(fileName);
         
         this.dataList.addAll(tableData.getRecords());
         
         return tableData;
     }
     
-    public TableData loadExcelData(String fileName)
-    {
-        this.tableData = this.dataExelLoader.loadData(fileName);
-        
-        this.dataList.addAll(tableData.getRecords());
-        
-        return tableData;
-    }
-    
-    public ArrayList<Object> getColumnData(String col_id)
+	public ArrayList<Object> getColumnData(String col_id)
     {
         ArrayList<Object> columnData = new ArrayList<>();
         

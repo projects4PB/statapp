@@ -13,7 +13,12 @@ import javafx.beans.value.ObservableValue;
 public class RecordData
 {
     private final HashMap<String, Object> fields;
-    
+
+	public RecordData()
+	{
+		this.fields = new HashMap<>();
+	}
+
     public RecordData(HashMap<String, Object> fields)
     {
         this.fields = fields;
