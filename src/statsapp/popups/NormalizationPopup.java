@@ -32,7 +32,7 @@ public class NormalizationPopup extends BasePopup {
     
 	public NormalizationPopup()
     {
-        super(new GridPane(), "Stamdaryzacja");
+        super(new GridPane(), "Normalizacja");
 
         GridPane contentPane = (GridPane) this.getRootNode();
         
@@ -51,8 +51,6 @@ public class NormalizationPopup extends BasePopup {
                 "Wybierz kolumnę:"
         );
         chooseColumnLabel.setPrefSize(185, 25);
-        final Label normalizationLabel = new Label();
-        normalizationLabel.setPrefSize(185, 25);
         ComboBox<String> columnsBox = new ComboBox<>();
         
         ObservableList<String> columnsItems = columnsBox.getItems();
@@ -68,18 +66,26 @@ public class NormalizationPopup extends BasePopup {
             public void changed(ObservableValue ov,
 				String oldVal, String newVal)
             {                
-                CURRENT_COLUMN = newVal; 
-                float normalizationValue = dManager.getStandardDeviation(CURRENT_COLUMN);
-                
-                normalizationLabel.setText("" + normalizationValue);
-                
+                CURRENT_COLUMN = newVal;                       
             }    
         });
         
         contentPane.add(chooseColumnLabel, 0, 1);
         contentPane.add(columnsBox, 1, 1);
-        contentPane.add(normalizationLabel, 1, 2);
-                
+
+               
+        Button okButton = new Button("OK");
+        okButton.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+               dManager.getStandardization(CURRENT_COLUMN);
+                hide();
+            }
+        });
+        okButton.setPrefSize(185, 25);
+               
         Button cancelButton = new Button("ANULUJ");
         cancelButton.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -90,6 +96,8 @@ public class NormalizationPopup extends BasePopup {
             }
         });
         cancelButton.setPrefSize(185, 25);
+        
+        contentPane.add(okButton, 0, 7);      
         
         contentPane.add(cancelButton, 1, 7);
         

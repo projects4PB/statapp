@@ -28,7 +28,9 @@ public class StandarizationPopup extends BasePopup {
     
     	// Aktualnie wybrana kolumna
 	private static String CURRENT_COLUMN = "";
-
+        
+        private float minValue, maxValue ;
+                
 	private DataManager dManager = DataManager.getInstance();
     
 	public StandarizationPopup()
@@ -51,9 +53,19 @@ public class StandarizationPopup extends BasePopup {
         Label chooseColumnLabel = new Label(
                 "Wybierz kolumnę:"
         );
+        
+        Label minLabel = new Label("Podaj Min");
+        Label maxLabel = new Label("Podaj Max");
         chooseColumnLabel.setPrefSize(185, 25);
+        minLabel.setPrefSize(185, 25);
+        maxLabel.setPrefSize(185, 25);
+        
+        
+        final TextField minValueField = new TextField();
+        final TextField maxValueField = new TextField();
         
         ComboBox<String> columnsBox = new ComboBox<>();
+        
         
         ObservableList<String> columnsItems = columnsBox.getItems();
         
@@ -72,17 +84,52 @@ public class StandarizationPopup extends BasePopup {
                 CURRENT_COLUMN = newVal;    
             }    
         });
+        	
+        minValueField.setPrefSize(185, 25);
+        minValueField.textProperty().addListener(
+				new ChangeListener<String>()
+		{
+			@Override
+			public void changed(ObservableValue<? extends String> ov,
+				String oldVal, String newVal)
+			{
+                            if(newVal.equals("") == false)
+				minValue = Float.parseFloat(newVal);
+                            else
+                                minValue = 1;
+			}
+		});
+        
+        maxValueField.setPrefSize(185, 25);
+        maxValueField.textProperty().addListener(
+				new ChangeListener<String>()
+		{
+			@Override
+			public void changed(ObservableValue<? extends String> ov,
+				String oldVal, String newVal)
+			{
+                            if(newVal.equals("") == false)
+				maxValue = Float.parseFloat(newVal);
+                            else
+                                maxValue = 1;
+			}
+		});
+        
+        
         
         contentPane.add(chooseColumnLabel, 0, 1);
         contentPane.add(columnsBox, 1, 1);
-        
+        contentPane.add(minLabel, 0, 4);
+        contentPane.add(minValueField, 1, 4);
+        contentPane.add(maxLabel, 0, 5);
+        contentPane.add(maxValueField, 1, 5);
         Button okButton = new Button("OK");
         okButton.setOnAction(new EventHandler<ActionEvent>()
         {
             @Override
             public void handle(ActionEvent e)
             {
-                dManager.getStandardization(CURRENT_COLUMN);
+                dManager.mapColumValues(CURRENT_COLUMN, minValue, maxValue);
                 hide();
             }
         });
