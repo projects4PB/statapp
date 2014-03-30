@@ -28,35 +28,67 @@ public class DataSaver {
       
     public void saveToFile(String filePath){
 
-        try {
+        try
+		{
             File file = new File(filePath);
 
-        if (!file.exists()) {
-            file.createNewFile();
-        }
+			if (!file.exists())
+			{
+				file.createNewFile();
+			}
 
-        FileWriter fw = new FileWriter(file.getAbsoluteFile());
-        BufferedWriter bw = new BufferedWriter(fw);
-        int curr_index = 0;
+			FileWriter fw = new FileWriter(
+					file.getAbsoluteFile()
+			);
+			BufferedWriter bw = new BufferedWriter(fw);
+			
+			int curr_index = 0;
+			
+			TableData tableData = dManager.getTableData();
+			
+			String[] colNames = tableData.getColumnsNames();
+
+			StringBuilder sb = new StringBuilder();
+
+			String delimiter = "";
+			
+			for (String colName : colNames)
+			{
+				sb.append(delimiter).append(colName);
+
+				delimiter = ",";
+			}
+			bw.write(sb.toString());
+			bw.write("\n");
+
+			for(int i = 0; i < dManager.getDataList().size(); i++)
+			{ 
+				TableRecord tableRecord = (TableRecord) 
+					dManager.getDataList().get(i);
+				
+				RecordData recordData = tableRecord.getRecordData();
+				
+				sb = new StringBuilder();
+
+				delimiter = "";
+				
+				for (String colName : colNames)
+				{
+					Object obj = recordData.getFields().get(colName);
+					
+					sb.append(delimiter).append(obj.toString());
+
+					delimiter = ",";
+				}
+				bw.write(sb.toString());
+				bw.write("\n");
+			}
+			bw.close();
         
-        TableData tableData = dManager.getTableData();
-        String[] colNames = tableData.getColumnsNames();
-        
-        for(int i = 0; i < dManager.getDataList().size(); i++){ 
-            TableRecord tableRecord = (TableRecord)dManager.getDataList().get(i);
-            RecordData recordData = tableRecord.getRecordData();
-            
-            for (String colName : colNames) {
-                Object obj = recordData.getFields();
-                bw.write(obj.toString());
-                bw.write("\n");
-            }
         }
-        
-        bw.close();
-        
-        } catch (IOException e) {
-            e.printStackTrace();
+		catch (IOException ex) 
+		{
+            ex.printStackTrace(System.err);
         }        
     }  
 }

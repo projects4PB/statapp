@@ -93,6 +93,8 @@ public class DataManager
     {
         this.tableData = dataLoader.loadData(fileName);
         
+		this.dataList.removeAll(this.dataList);
+
         this.dataList.addAll(tableData.getRecords());
         
         return tableData;
@@ -135,6 +137,16 @@ public class DataManager
             
             tableRecord.getRecordData().setFieldValue(col_id, colData.get(i));
         }
+		for(Object obj : this.dataTable.getColumns())
+		{
+			TableColumn tableCol = (TableColumn) obj;
+
+			if(tableCol.getId().equals(col_id))
+			{
+				tableCol.setVisible(false);
+				tableCol.setVisible(true);
+			}
+		}
     }
     
     private ArrayList<Float> getNumbericData(List<Object> values)
@@ -148,7 +160,7 @@ public class DataManager
         return numbericData;
     }
     
-    private boolean isNumbericColumn(String col_id)
+    public boolean isNumbericColumn(String col_id)
     {
           TableRecord tableRecord = tableData.getRecords ().get(0);
 
@@ -159,7 +171,7 @@ public class DataManager
           return false;
     }
     
-    private boolean isTextDataColumn(String col_id)
+    public boolean isTextDataColumn(String col_id)
     {
         TableRecord tableRecord = tableData.getRecords ().get(0);
 
@@ -329,6 +341,8 @@ public class DataManager
     
     public float getPercentileValue(String col_id, float cValue)
     {
+		if(!this.isNumbericColumn(col_id)) return -1.0f;
+
         ArrayList<Object> colData = this.getColumnData(col_id);
         ArrayList<Object> sortedValues =
                 this.sortColumnValues(colData);
@@ -412,7 +426,7 @@ public class DataManager
         ArrayList<Object> colData = this.getColumnData(col_id);
         
         HashMap<String, Integer> mappedValues = new HashMap<>();
-        
+
         ArrayList<Object> resultData = new ArrayList<>();
         
         for(Object obj : colData)

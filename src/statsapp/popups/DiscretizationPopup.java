@@ -26,6 +26,9 @@ public class DiscretizationPopup extends BasePopup
 	// Aktualnie wybrana kolumna
 	private static String CURRENT_COLUMN = "";
 
+	// Typ aktualnie wybranej kolumny
+	private static String COLUMN_TYPE = "";
+
 	// Podział na przedziały
 	private static boolean FLAG_CHECKBOX_DIVIDE = false;
 	
@@ -81,7 +84,13 @@ public class DiscretizationPopup extends BasePopup
             public void changed(ObservableValue ov,
 				String oldVal, String newVal)
             {                
-                CURRENT_COLUMN = newVal;    
+                CURRENT_COLUMN = newVal;
+
+				if(dManager.isNumbericColumn(CURRENT_COLUMN))
+				{
+					COLUMN_TYPE = "NUMBER";
+				}
+				else COLUMN_TYPE = "STRING";
             }    
         });
         
@@ -214,8 +223,8 @@ public class DiscretizationPopup extends BasePopup
 			}
 		});
 		contentPane.add(digitizeCheckBox, 0, 6, 2, 1);
-
-        Button okButton = new Button("OK");
+        
+		Button okButton = new Button("OK");
         okButton.setOnAction(new EventHandler<ActionEvent>()
         {
             @Override
@@ -247,7 +256,8 @@ public class DiscretizationPopup extends BasePopup
 
 	private void discretizeColumn()
 	{
-		if(FLAG_CHECKBOX_DIVIDE)
+		if(FLAG_CHECKBOX_DIVIDE
+				&& COLUMN_TYPE.equals("NUMBER"))
 		{
 			dManager.divideValues(
 					CURRENT_COLUMN,
@@ -261,7 +271,8 @@ public class DiscretizationPopup extends BasePopup
 					GROUPS_NUMBER
 			);
 		}
-		if(FLAG_CHECKBOX_DIGITIZE)
+		if(FLAG_CHECKBOX_DIGITIZE
+				&& COLUMN_TYPE.equals("STRING"))
 		{
 			dManager.digitizeValues(
 					CURRENT_COLUMN

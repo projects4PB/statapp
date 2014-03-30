@@ -102,11 +102,12 @@ public class RootPanel extends GridPane
             public void handle(ActionEvent e)
             {
                 FileChooser fileChooser = new FileChooser();
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+                FileChooser.ExtensionFilter extFilter =
+					new FileChooser.ExtensionFilter(
+						"TXT files (*.txt)", "*.txt");
                 fileChooser.getExtensionFilters().add(extFilter);
                 File file = fileChooser.showSaveDialog(primaryStage) ;   
                 dataSaver.saveToFile(file.getAbsolutePath());
-                
             }
         });
         

@@ -48,10 +48,10 @@ public class ChartPopup extends BasePopup
         closeButton.setPrefSize(25, 25);
 
         Label chooseFirstVarLabel = new Label("Zmienna X:");
-        chooseFirstVarLabel.setPrefSize(150, 25);
+        chooseFirstVarLabel.setPrefSize(115, 25);
     
 		Label chooseSecondVarLabel = new Label("Zmienna Y:");
-        chooseSecondVarLabel.setPrefSize(150, 25);
+        chooseSecondVarLabel.setPrefSize(115, 25);
         
         ComboBox<String> firstColumnsBox = new ComboBox<>();
         firstColumnsBox.valueProperty().addListener(
@@ -68,7 +68,7 @@ public class ChartPopup extends BasePopup
 				getContent().set(0, sChart);
             }    
         });
-        firstColumnsBox.setPrefSize(150, 25);
+        firstColumnsBox.setPrefSize(100, 25);
 
         ComboBox<String> secondColumnsBox = new ComboBox<>();
         secondColumnsBox.valueProperty().addListener(
@@ -85,7 +85,7 @@ public class ChartPopup extends BasePopup
 				getContent().set(0, sChart);
             }    
         });
-		secondColumnsBox.setPrefSize(150, 25);
+		secondColumnsBox.setPrefSize(100, 25);
         
         ObservableList<String> firstColumnsItems =
 			firstColumnsBox.getItems();
@@ -102,6 +102,11 @@ public class ChartPopup extends BasePopup
 			);
         }
 		HBox chartTools = new HBox();
+
+		chartTools.getStylesheets().add(
+				POPUPS_STYLESHEET
+		);
+		chartTools.getStyleClass().add("chart-tools");
 
 		chartTools.getChildren().addAll(
 				closeButton,
@@ -155,8 +160,6 @@ public class ChartPopup extends BasePopup
         final ScatterChart<Number, Number> sChart = new
             ScatterChart<Number, Number>(xAxis, yAxis);
         
-		sChart.setTitle("Wykres zależności dwóch zmiennych");
-		
 		sChart.getStylesheets().add(POPUPS_STYLESHEET);
 		sChart.getStyleClass().add("chart");
 		
