@@ -150,30 +150,24 @@ public class DataManager
     
     private boolean isNumbericColumn(String col_id)
     {
-        for(Object col : this.dataTable.getColumns())
-        {
-            TableColumn tableCol = ((TableColumn) col);
-            
-            if(tableCol.getId().equals(col_id))
-            {
-                
-            }
-        }
-        return true;
+          TableRecord tableRecord = tableData.getRecords ().get(0);
+
+          Object obj = tableRecord.getRecordData().getFields().get(col_id);
+
+          if(obj instanceof Number) return true;
+
+          return false;
     }
     
     private boolean isTextDataColumn(String col_id)
     {
-        for(Object col : this.dataTable.getColumns())
-        {
-            TableColumn tableCol = ((TableColumn) col);
-            
-            if(tableCol.getId().equals(col_id))
-            {
-                
-            }
-        }
-        return true;
+        TableRecord tableRecord = tableData.getRecords ().get(0);
+
+        Object obj = tableRecord.getRecordData().getFields().get(col_id);
+
+        if(obj instanceof String) return true;
+
+            return false;
     }
     
     private ArrayList<Object> sortColumnValues(List<Object> colData)

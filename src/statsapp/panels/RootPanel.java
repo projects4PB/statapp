@@ -18,6 +18,8 @@ import statsapp.managers.DataManager;
 import statsapp.popups.ChartPopup;
 import statsapp.popups.CreateObjectPopup;
 import statsapp.popups.DiscretizationPopup;
+import statsapp.popups.NormalizationPopup;
+import statsapp.popups.StandarizationPopup;
 import statsapp.popups.StatisticsPopup;
 import statsapp.savers.DataSaver;
 import statsapp.tables.DataTable;
@@ -159,6 +161,30 @@ public class RootPanel extends GridPane
                 popup.show(getScene().getWindow());
             }
         });
+        
+        MenuItem standarization = new MenuItem("Standaryzacja");
+        standarization.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+                StandarizationPopup popup = new StandarizationPopup();
+
+                popup.show(getScene().getWindow());
+            }
+        });
+          
+        MenuItem normalization = new MenuItem("Normalizacja");
+        normalization.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+                NormalizationPopup popup = new NormalizationPopup();
+
+                popup.show(getScene().getWindow());
+            }
+        });
 
         MenuItem statistics = new MenuItem("Statystyki");
         statistics.setOnAction(new EventHandler<ActionEvent>()
@@ -177,7 +203,9 @@ public class RootPanel extends GridPane
 				createObject,
 				chart2D,
                 discretization,
-                statistics
+                statistics,
+                standarization,
+                normalization
                 );
         
         menuBar.getMenus().addAll(fileMenu, editMenu);

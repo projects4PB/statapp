@@ -104,7 +104,10 @@ public class DiscretizationPopup extends BasePopup
 			public void changed(ObservableValue<? extends String> ov,
 				String oldVal, String newVal)
 			{
+                            if(newVal.equals("") == false)
 				DIVISIONS_NUMBER = Integer.parseInt(newVal);
+                            else
+                                DIVISIONS_NUMBER = 1;
 			}
 		});
         final Button divideButton = new Button("Podziel na przedziały");
@@ -166,7 +169,10 @@ public class DiscretizationPopup extends BasePopup
 			public void changed(ObservableValue<? extends String> ov,
 				String oldVal, String newVal)
 			{
+                            if(newVal.equals("") == false)
 				GROUPS_NUMBER = Integer.parseInt(newVal);
+                            else
+                                GROUPS_NUMBER = 1;
 			}
 		});
 		groupsNumberLabel.setDisable(true);		
