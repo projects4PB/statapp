@@ -2,15 +2,19 @@ package statsapp.popups;
 
 import java.util.ArrayList;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
-import statsapp.data.records.TableRecord;
 import statsapp.managers.DataManager;
 
 /**
@@ -19,13 +23,33 @@ import statsapp.managers.DataManager;
  */
 public class DiscretizationPopup extends BasePopup
 {
-    public DiscretizationPopup()
+	// Aktualnie wybrana kolumna
+	private static String CURRENT_COLUMN = "";
+
+	// Podział na przedziały
+	private static boolean FLAG_CHECKBOX_DIVIDE = false;
+	
+	// Zamiana na wartości numeryczne
+	private static boolean FLAG_CHECKBOX_DIGITIZE = false;
+	
+	// Preferowanie najliczniejszych klas
+	private static boolean FLAG_CHECKBOX_GROUP = false;
+
+	// Ilość przedziałów
+	private static int DIVISIONS_NUMBER = 0;
+
+	// Ilość grup wartości
+	private static int GROUPS_NUMBER = 0;
+
+	private DataManager dManager = DataManager.getInstance();
+    
+	public DiscretizationPopup()
     {
         super(new GridPane(), "DYSKRETYZACJA");
 
         GridPane contentPane = (GridPane) this.getRootNode();
         
-        contentPane.setPrefSize(400, 100);
+        contentPane.setPrefWidth(400);
         
         contentPane.getStyleClass().add("discretization");
         
@@ -35,17 +59,155 @@ public class DiscretizationPopup extends BasePopup
         
         contentPane.add(titleLabel, 0, 0, 2, 1);
         
-        Label fieldLabel = new Label(
+		// Wybieranie kolumny ---------------------------------------
+        Label chooseColumnLabel = new Label(
+                "Wybierz kolumnę:"
+        );
+        chooseColumnLabel.setPrefSize(185, 25);
+        
+        ComboBox<String> columnsBox = new ComboBox<>();
+        
+        ObservableList<String> columnsItems = columnsBox.getItems();
+        
+        for(Object col : dManager.getDataTable().getColumns())
+        {
+            columnsItems.add(((TableColumn) col).getId());
+        }
+        columnsBox.setPrefSize(185, 25);
+        
+        columnsBox.valueProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue ov,
+				String oldVal, String newVal)
+            {                
+                CURRENT_COLUMN = newVal;    
+            }    
+        });
+        
+        contentPane.add(chooseColumnLabel, 0, 1);
+        contentPane.add(columnsBox, 1, 1);
+
+		// Dyskretyzacja na przedziały ------------------------------
+        final Label divisionsNumberLabel = new Label(
                 "Podaj ilość przedziałów:"
         );
-        fieldLabel.setPrefSize(185, 25);
+        divisionsNumberLabel.setPrefSize(185, 25);
         
-        TextField textField = new TextField();
+		final TextField divisionsNumberField = new TextField();
+		
+        divisionsNumberField.setPrefSize(185, 25);
+        divisionsNumberField.textProperty().addListener(
+				new ChangeListener<String>()
+		{
+			@Override
+			public void changed(ObservableValue<? extends String> ov,
+				String oldVal, String newVal)
+			{
+				DIVISIONS_NUMBER = Integer.parseInt(newVal);
+			}
+		});
+        final Button divideButton = new Button("Podziel na przedziały");
+        divideButton.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+				int divisionsNumber = Integer.parseInt(
+					divisionsNumberField.getText()
+				);
+				dManager.divideValues(
+					CURRENT_COLUMN,
+					divisionsNumber
+				);
+                hide();
+            }
+        });
+        divideButton.setPrefSize(380, 25);
+		
+		divisionsNumberLabel.setDisable(true);		
+		divisionsNumberField.setDisable(true);
+		
+		CheckBox divideCheckBox = new CheckBox(
+				"dyskretyzacja zmiennych na przedziały"
+		);
+		divideCheckBox.setPrefSize(380, 25);
+		divideCheckBox.selectedProperty().addListener(
+				new ChangeListener<Boolean>()
+		{
+			public void changed(ObservableValue<? extends Boolean> ov,
+				Boolean oldVal, Boolean newVal)
+			{
+				divisionsNumberLabel.setDisable(oldVal);		
+				divisionsNumberField.setDisable(oldVal);
+				divideButton.setDisable(oldVal);
+				
+				FLAG_CHECKBOX_DIVIDE = newVal;
+			}
+		});
         
-        textField.setPrefSize(185, 25);
+		contentPane.add(divideCheckBox, 0, 2, 2, 1);
+        contentPane.add(divisionsNumberLabel, 0, 3);
+        contentPane.add(divisionsNumberField, 1, 3);
+
+		// Preferowanie najliczniejszych klas
+        final Label groupsNumberLabel = new Label(
+                "Podaj ilość grup wartości:"
+        );
+        groupsNumberLabel.setPrefSize(185, 25);
         
-        contentPane.add(fieldLabel, 0, 1);
-        contentPane.add(textField, 1, 1);
+		final TextField groupsNumberField = new TextField();
+		
+        groupsNumberField.setPrefSize(185, 25);
+        groupsNumberField.textProperty().addListener(
+				new ChangeListener<String>()
+		{
+			@Override
+			public void changed(ObservableValue<? extends String> ov,
+				String oldVal, String newVal)
+			{
+				GROUPS_NUMBER = Integer.parseInt(newVal);
+			}
+		});
+		groupsNumberLabel.setDisable(true);		
+		groupsNumberField.setDisable(true);
+		
+		CheckBox groupCheckBox = new CheckBox(
+				"preferowanie najliczniejszych klas"
+		);
+		groupCheckBox.setPrefSize(380, 25);
+		groupCheckBox.selectedProperty().addListener(
+				new ChangeListener<Boolean>()
+		{
+			public void changed(ObservableValue<? extends Boolean> ov,
+				Boolean oldVal, Boolean newVal)
+			{
+				groupsNumberLabel.setDisable(oldVal);		
+				groupsNumberField.setDisable(oldVal);
+
+				FLAG_CHECKBOX_GROUP = newVal;
+			}
+		});
+
+		contentPane.add(groupCheckBox, 0, 4, 2, 1);
+        contentPane.add(groupsNumberLabel, 0, 5);
+        contentPane.add(groupsNumberField, 1, 5);
+
+		// Zamiana na wartości numeryczne
+		CheckBox digitizeCheckBox = new CheckBox(
+				"zamiana na wartości numeryczne"
+		);
+		digitizeCheckBox.setPrefSize(380, 25);
+		digitizeCheckBox.selectedProperty().addListener(
+				new ChangeListener<Boolean>()
+		{
+			public void changed(ObservableValue<? extends Boolean> ov,
+				Boolean oldVal, Boolean newVal)
+			{
+				FLAG_CHECKBOX_DIGITIZE = newVal;
+			}
+		});
+		contentPane.add(digitizeCheckBox, 0, 6, 2, 1);
 
         Button okButton = new Button("OK");
         okButton.setOnAction(new EventHandler<ActionEvent>()
@@ -53,18 +215,8 @@ public class DiscretizationPopup extends BasePopup
             @Override
             public void handle(ActionEvent e)
             {
-                DataManager dManager = DataManager.getInstance();
+				discretizeColumn();
 
-				ArrayList<Object> colData = new ArrayList<>();
-				for(int i = 0; i < dManager.getDataList().size(); i++)
-				{
-					colData.add(3.0f);
-				}
-				dManager.setLastColumnData("std_", colData);
-
-				dManager.getDataTable().addColumn("std_");
-
-                
                 hide();
             }
         });
@@ -81,18 +233,33 @@ public class DiscretizationPopup extends BasePopup
         });
         cancelButton.setPrefSize(185, 25);
         
-        contentPane.add(okButton, 0, 2);
-        contentPane.add(cancelButton, 1, 2);
+        contentPane.add(okButton, 0, 7);
+        contentPane.add(cancelButton, 1, 7);
         
         this.getContent().add(contentPane);
-        
-        DataManager dManager = DataManager.getInstance();
-        
-        //dManager.digitizeValues("values");
-        
-        //dManager.divideValues("values", 3);
-        
-        //dManager.getStandardization("seplen");
-          dManager.mapColumValues("seplen", 3.0f, 5.0f);
     }
+
+	private void discretizeColumn()
+	{
+		if(FLAG_CHECKBOX_DIVIDE)
+		{
+			dManager.divideValues(
+					CURRENT_COLUMN,
+					DIVISIONS_NUMBER
+			);
+		}
+		if(FLAG_CHECKBOX_GROUP)
+		{
+			dManager.groupByValueAmount(
+					CURRENT_COLUMN,
+					GROUPS_NUMBER
+			);
+		}
+		if(FLAG_CHECKBOX_DIGITIZE)
+		{
+			dManager.digitizeValues(
+					CURRENT_COLUMN
+			);
+		}
+	}
 }

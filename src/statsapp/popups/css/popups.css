@@ -1,12 +1,12 @@
 .popup {
     -fx-background-color: rgba(0, 125, 220, 0.5);
 }
-.discretization {
+.popup {
     -fx-hgap: 10px;
     -fx-vgap: 10px;
     -fx-padding: 10px;
 }
-.discretization .label {
+.popup .label {
     -fx-padding: 5px;
     -fx-border-color: rgb(0, 100, 220);
     -fx-border-width: 1px;
@@ -14,11 +14,11 @@
     -fx-background-radius: 2px;
     -fx-background-color: rgb(0, 150, 220);
 }
-.discretization .button {
+.popup .button {
     -fx-background-color: linear-gradient(
         rgb(0, 160, 220), rgb(0, 125, 220));
 }
-.discretization .button:hover {
+.popup .button:hover {
     -fx-background-color: linear-gradient(
         rgb(0, 135, 220), rgb(0, 100, 220));
 }
@@ -28,5 +28,5 @@
 }
 .chart {
 	-fx-padding: 20px;
-	-fx-background-color: rgba(0, 125, 220, 0.5);
+	-fx-background-color: rgba(0, 125, 220);
 }
