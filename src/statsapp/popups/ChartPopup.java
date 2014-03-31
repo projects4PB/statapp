@@ -94,12 +94,16 @@ public class ChartPopup extends BasePopup
         
         for(Object col : dManager.getDataTable().getColumns())
         {
-            firstColumnsItems.add(
-					((TableColumn) col).getId()
-			);
-            secondColumnsItems.add(
-					((TableColumn) col).getId()
-			);
+			if(dManager.isNumbericColumn(
+					((TableColumn) col).getId()))
+			{
+				firstColumnsItems.add(
+						((TableColumn) col).getId()
+				);
+				secondColumnsItems.add(
+						((TableColumn) col).getId()
+				);
+			}
         }
 		HBox chartTools = new HBox();
 
