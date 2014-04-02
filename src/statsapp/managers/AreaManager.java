@@ -18,6 +18,10 @@ import statsapp.data.records.TableRecord;
 import statsapp.models.AreaObject;
 import statsapp.models.MetricType;
 
+import org.math.array.LinearAlgebra;
+
+import statsapp.models.AreaObject;
+
 /*
  * Klasa zarządzająca obiekami w przestrzeni obiektów
  */
@@ -25,9 +29,11 @@ public class AreaManager
 {
     private static volatile AreaManager instance = null;
 
-	private ArrayList<AreaObject> areaObjects;;
+	private ArrayList<AreaObject> areaObjects;
         
-        private DataManager dManager = DataManager.getInstance();
+    private DataManager dManager = DataManager.getInstance();
+
+	private ArrayList<AreaObject> areaObjects;
 
 	private AreaManager()
 	{
@@ -49,9 +55,9 @@ public class AreaManager
         return instance;
     }
 
-	public void addAreaObject(AreaObject obj)
+	public void addAreaObject(AreaObject areaObj)
 	{
-		this.areaObjects.add(obj);
+		this.areaObjects.add(areaObj);
 	}
 	
 	public void removeAreaObject(AreaObject areaObj)
@@ -63,8 +69,6 @@ public class AreaManager
 	{
 		return this.areaObjects;
 	}
-        
-        
         public void addTableDataToAreaObjects()
         {
             TableData tableData = dManager.getTableData();
@@ -300,7 +304,6 @@ public class AreaManager
     public double calculateMahalanobisLength(
 			AreaObject obj1, AreaObject obj2)
 	{
-		// the covariance matrix
 		double[][] S;
 
 		int dim = obj1.getVars().size();
