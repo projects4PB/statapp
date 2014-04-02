@@ -1,35 +1,28 @@
 package statsapp.models;
 
+import java.util.ArrayList;
+
 /**
  * Klasa reprezentujaca obiekt w przestrzeni
  */
 public class AreaObject
 {
-	// wspolrzedna X obiektu
-	private float xCoord;
+	// wektor zmiennych objasniajacych
+	private ArrayList<Float> vars;
 	
-	// wspolrzedna Y obiektu
-	private float yCoord;
-
 	// klasa obiektu
 	private String objectClass;
 
-	public AreaObject(float x, float y)
+	public AreaObject(ArrayList<Float> vars)
 	{
-		this.xCoord = x;
-		this.yCoord = y;
+		this.vars = vars;
 	}
 
-	public float getXCoord()
+	public ArrayList<Float> getVars()
 	{
-		return this.xCoord;
+		return this.vars;
 	}
 	
-	public float getYCoord()
-	{
-		return this.yCoord;
-	}
-
 	public String getAreaObjectClass()
 	{
 		return this.objectClass;
