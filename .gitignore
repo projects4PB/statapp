@@ -9,3 +9,5 @@ manifest.mf
 /dist/
 /test/
 /bin
+*.swp
+*.swo
