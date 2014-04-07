@@ -73,7 +73,10 @@ public class TextFileLoader implements Loader
     
     private String[] splitValues(String fileLine)
     {
-        return fileLine.split(",");
+//        if(fileLine.contains(","))
+//            return fileLine.split(",");
+//        else
+        return fileLine.split("\\s+");
     }
     
     private HashMap<String, Object> parseData(
@@ -89,6 +92,23 @@ public class TextFileLoader implements Loader
             {
                 parsedData.put(colNames[i], Float.parseFloat(values[i]));
             }
+            
+            else if(values[i].matches ("\\d+"))            
+            {                
+                parsedData.put(colNames[i], Integer.parseInt(values[i]));            
+            }
+ 
+            else if(values[i].matches ("\\d+,\\d+"))            
+            {
+                System.out.println(" OK");                
+                parsedData.put(colNames[i], Float.parseFloat(values[i]));            
+            }
+            else if(values[i].matches (",\\d+"))            
+            {                
+                System.out.println(" OK");
+                parsedData.put(colNames[i], Float.parseFloat(values[i]));            
+            }
+
             else parsedData.put(colNames[i], values[i]);
         }
         return parsedData;

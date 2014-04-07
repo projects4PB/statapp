@@ -14,8 +14,10 @@ import javafx.stage.Stage;
 import statsapp.data.TableData;
 import statsapp.loaders.ExcelFileLoader;
 import statsapp.loaders.TextFileLoader;
+import statsapp.managers.AreaManager;
 import statsapp.managers.DataManager;
 import statsapp.popups.ChartPopup;
+import statsapp.popups.ClassifyQuantityPopup;
 import statsapp.popups.CreateObjectPopup;
 import statsapp.popups.DiscretizationPopup;
 import statsapp.popups.NormalizationPopup;
@@ -31,6 +33,7 @@ import statsapp.tables.DataTable;
 public class RootPanel extends GridPane
 {
     private final DataManager dManager = DataManager.getInstance();
+    private final AreaManager areaManager = AreaManager.getInstance();
     
     public RootPanel()
     {
@@ -87,6 +90,7 @@ public class RootPanel extends GridPane
 					);
                     DataTable dataTabel = dManager
                             .createDataTable(tableData);
+                    //areaManager.addTableDataToAreaObjects();
 
                     add(dataTabel, 0, 1);
                 }               
@@ -174,6 +178,18 @@ public class RootPanel extends GridPane
                 popup.show(getScene().getWindow());
             }
         });
+        
+        MenuItem classifyQuantity = new MenuItem("Jakość klasyfikacji");
+        classifyQuantity.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+                ClassifyQuantityPopup popup = new ClassifyQuantityPopup();
+
+                popup.show(getScene().getWindow());
+            }
+        });
           
         MenuItem normalization = new MenuItem("Normalizacja");
         normalization.setOnAction(new EventHandler<ActionEvent>()
@@ -206,7 +222,8 @@ public class RootPanel extends GridPane
                 discretization,
                 statistics,
                 standarization,
-                normalization
+                normalization,
+                classifyQuantity
                 );
         
         menuBar.getMenus().addAll(fileMenu, editMenu);
