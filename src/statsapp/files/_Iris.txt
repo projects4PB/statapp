@@ -4,7 +4,6 @@
 #PLADLG - Dlugosc platkow
 #PLASZE - Szerokosc platkow
 #ODMIRYS - Trzy odmiany irysow
-
 LISDLG	LISSZE	PLADLG	PLASZE	ODMIRYS
 5,0	3,3	1,4	,2	SETOSA
 6,4	2,8	5,6	2,2	VIRGINIC

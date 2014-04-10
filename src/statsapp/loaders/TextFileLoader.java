@@ -35,12 +35,25 @@ public class TextFileLoader implements Loader
         {
             String fileLine = buffReader.readLine();
             
-            while(fileLine.trim().startsWith("#"))
+            while(fileLine.trim().startsWith("#")
+					|| fileLine.trim().length() == 0)
             {
                 fileLine = buffReader.readLine();
             }
             
-            String[] colNames = this.splitValues(fileLine);
+            String[] firstLine = this.splitValues(fileLine);
+			
+			String[] colNames = new String[firstLine.length];
+
+			for(int i = 0; i < firstLine.length; i++)
+			{
+				colNames[i] = "attr" + (i + 1);
+			}
+			
+			RecordData recData = new RecordData(
+					this.parseData(colNames, firstLine)
+			);
+            tableData.addRecord(recData);
             
             tableData.setColumnsNames(colNames);
             
@@ -88,25 +101,40 @@ public class TextFileLoader implements Loader
         
         for(int i = 0; i < values.length; i++)
         {
-            if(values[i].matches("\\d+\\.\\d+"))
+            if(values[i].matches("\\-\\d+\\.\\d+"))
             {
                 parsedData.put(colNames[i], Float.parseFloat(values[i]));
             }
             
+			else if(values[i].matches("\\d+\\.\\d+"))
+            {
+                parsedData.put(colNames[i], Float.parseFloat(values[i]));
+            }
+			
+			else if(values[i].matches("\\-\\.\\d+"))
+            {
+                parsedData.put(colNames[i], Float.parseFloat(values[i]));
+            }
+			
+			else if(values[i].matches("\\.\\d+"))
+            {
+                parsedData.put(colNames[i], Float.parseFloat(values[i]));
+            }
+            
+            else if(values[i].matches ("\\d+\\,\\d+"))            
+            {
+				String floatFormat = values[i].replace(",", ".");
+                parsedData.put(colNames[i], Float.parseFloat(floatFormat));            
+            }
+            else if(values[i].matches ("\\,\\d+"))            
+            {                
+				String floatFormat = values[i].replace(",", ".");
+                parsedData.put(colNames[i], Float.parseFloat(floatFormat));            
+            }
+
             else if(values[i].matches ("\\d+"))            
             {                
                 parsedData.put(colNames[i], Integer.parseInt(values[i]));            
-            }
- 
-            else if(values[i].matches ("\\d+,\\d+"))            
-            {
-                System.out.println(" OK");                
-                parsedData.put(colNames[i], Float.parseFloat(values[i]));            
-            }
-            else if(values[i].matches (",\\d+"))            
-            {                
-                System.out.println(" OK");
-                parsedData.put(colNames[i], Float.parseFloat(values[i]));            
             }
 
             else parsedData.put(colNames[i], values[i]);

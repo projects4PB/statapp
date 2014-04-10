@@ -29,8 +29,6 @@ public class AreaManager
 {
     private static volatile AreaManager instance = null;
 
-	private ArrayList<AreaObject> areaObjects;
-        
     private DataManager dManager = DataManager.getInstance();
 
 	private ArrayList<AreaObject> areaObjects;
