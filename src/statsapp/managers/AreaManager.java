@@ -11,16 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.math.array.LinearAlgebra;
+
 import statsapp.data.RecordData;
 import statsapp.data.TableData;
 import statsapp.data.records.TableRecord;
-
 import statsapp.models.AreaObject;
 import statsapp.models.MetricType;
-
-import org.math.array.LinearAlgebra;
-
-import statsapp.models.AreaObject;
+import statsapp.models.ObjectsSet;
 
 /*
  * Klasa zarządzająca obiekami w przestrzeni obiektów
@@ -33,9 +30,13 @@ public class AreaManager
 
 	private ArrayList<AreaObject> areaObjects;
 
+	private ArrayList<ObjectsSet> objectsSets;
+
 	private AreaManager()
 	{
 		this.areaObjects = new ArrayList<>();
+
+		this.objectsSets = new ArrayList<>();
 	}
 
     public static AreaManager getInstance()
@@ -58,9 +59,19 @@ public class AreaManager
 		this.areaObjects.add(areaObj);
 	}
 	
+	public void addObjectsSet(ObjectsSet objsSet)
+	{
+		this.objectsSets.add(objsSet);
+	}
+
 	public void removeAreaObject(AreaObject areaObj)
 	{
 		this.areaObjects.remove(areaObj);
+	}
+
+	public void removeObjectsSet(ObjectsSet objsSet)
+	{
+		this.areaObjects.remove(objsSet);
 	}
 
 	public ArrayList<AreaObject> getAreaObjects()
@@ -98,6 +109,11 @@ public class AreaManager
             }
         }
         
+		public ArrayList<ObjectsSet> getObjectsSets()
+		{
+			return this.objectsSets;
+		}
+		
         public HashMap calculateAllLengths(AreaObject areaObj, MetricType metricType)
         {
             HashMap hashMap = new HashMap();
@@ -232,6 +248,31 @@ public class AreaManager
             return quantity;
         }
 
+		public void assignObjectToSet(
+				AreaObject areaObj, MetricType metricType)
+		{
+			ObjectsSet assignSet = this.objectsSets.get(0);
+			
+			double minLength = this.calculateObjectToSetLength(
+					areaObj, assignSet, metricType);
+
+			for(int i = 1; i < this.objectsSets.size(); i++)
+			{
+				ObjectsSet objsSet = this.objectsSets.get(i);
+
+				double length = this.calculateObjectToSetLength(
+						areaObj, objsSet, metricType);
+
+				if(length < minLength)
+				{
+					minLength = length;
+
+					assignSet = objsSet;
+				}
+			}
+			assignSet.addAreaObject(areaObj);
+		}
+
        public static HashMap sortByValues(HashMap map) 
        { 
            List list = new LinkedList(map.entrySet());
@@ -251,6 +292,38 @@ public class AreaManager
            
            return sortedHashMap;
        }
+
+	   public double calculateObjectToSetLength(
+			   AreaObject areaObj,
+			   ObjectsSet objsSet,
+			   MetricType metricType)
+	   {
+		   double length = -1;
+
+		   switch(metricType)
+		   {
+			   case METRIC_EUKLIDES:
+				   length = calculateEuklidesLength(areaObj,
+						   objsSet.getAveragePoint());
+					break;
+
+			   case METRIC_MANHATTAN:
+				   length = calculateManhattanLength(areaObj,
+						   objsSet.getAveragePoint());
+				   break;
+
+			   case METRIC_L_INFINITY:
+				   length = calculateLInfinityLength(areaObj,
+						   objsSet.getAveragePoint());
+					break;
+
+			   case METRIC_MAHALANOBIS:
+				   length = calculateMahalanobisLength(areaObj,
+						   objsSet.getAveragePoint());
+					break;
+		   }
+		   return length;
+	   }
 
 	public double calculateEuklidesLength(
 			AreaObject obj1, AreaObject obj2)
@@ -330,4 +403,10 @@ public class AreaManager
         
 		return Math.sqrt(result[0][0]);
     }
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return super.toString();
+	}
 }

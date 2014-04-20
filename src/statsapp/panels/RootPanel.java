@@ -50,8 +50,8 @@ public class RootPanel extends GridPane
         
         Menu fileMenu = new Menu("Plik");
         
-        MenuItem load = new MenuItem("Załaduj dane");
-        load.setOnAction(new EventHandler<ActionEvent>()
+        MenuItem loadData = new MenuItem("Załaduj dane");
+        loadData.setOnAction(new EventHandler<ActionEvent>()
         {
             @Override
             public void handle(ActionEvent e)
@@ -88,15 +88,64 @@ public class RootPanel extends GridPane
 						.getInstance().loadData(
 							file.getAbsolutePath()
 					);
-                    DataTable dataTabel = dManager
+                    DataTable dataTable = dManager
                             .createDataTable(tableData);
-                    //areaManager.addTableDataToAreaObjects();
+                    
+					areaManager.addTableDataToAreaObjects();
 
-                    add(dataTabel, 0, 1);
+                    add(dataTable, 0, 1);
                 }               
             }
         });
         
+        MenuItem loadDataSet = new MenuItem("Załaduj zbiór danych");
+        loadDataSet.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent e)
+            {
+                FileChooser fileChooser = new FileChooser();
+                File file = fileChooser.showOpenDialog(
+                        getScene().getWindow()
+                );
+                
+                if(file != null)
+                {
+                    int index = file.getAbsolutePath().lastIndexOf('.');
+                    
+                    if(index > 0)
+					{
+                        String extension = file.getAbsolutePath()
+								.substring(index + 1);
+						
+						if(extension.equals("xlsx")
+							|| extension.equals("xls"))
+						{
+							DataManager.setDataLoader(
+									new ExcelFileLoader()
+							);
+						}
+						else
+						{
+							DataManager.setDataLoader(
+									new TextFileLoader()
+							);
+						}
+                    }
+					TableData tableData = DataManager
+						.getInstance().loadData(
+							file.getAbsolutePath()
+					);
+                    DataTable dataTable = dManager
+                            .createDataTable(tableData);
+                    
+					areaManager.addTableDataToAreaObjects();
+
+                    add(dataTable, 0, 1);
+                }               
+            }
+        });
+
         MenuItem save = new MenuItem("Zapisz");
         final Stage primaryStage = null;
         final DataSaver dataSaver = new DataSaver();
@@ -125,7 +174,7 @@ public class RootPanel extends GridPane
             }
         });
         
-        fileMenu.getItems().addAll(load, save, exit);
+        fileMenu.getItems().addAll(loadData, loadDataSet, save, exit);
         
         Menu editMenu = new Menu("Edycja");
         

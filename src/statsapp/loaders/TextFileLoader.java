@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+
 import statsapp.data.RecordData;
 import statsapp.data.TableData;
 
@@ -134,7 +136,7 @@ public class TextFileLoader implements Loader
 
             else if(values[i].matches ("\\d+"))            
             {                
-                parsedData.put(colNames[i], Integer.parseInt(values[i]));            
+                parsedData.put(colNames[i], Float.parseFloat(values[i]));            
             }
 
             else parsedData.put(colNames[i], values[i]);
