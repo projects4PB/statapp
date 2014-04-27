@@ -8,5 +8,5 @@ import statsapp.data.TableData;
  */
 public interface Loader
 {
-    abstract public TableData loadData(String fileName);
+    abstract public TableData loadData(String fileName, boolean loadClassAttr,String columnClassName);
 }

@@ -16,8 +16,10 @@ import statsapp.data.TableData;
  */
 public class TextFileLoader implements Loader
 {
+    private int classColumnIndex = -1;
+    
     @Override
-    public TableData loadData(String filePath)
+    public TableData loadData(String filePath, boolean loadClassAttr, String columnName)
     {
         TableData tableData = new TableData();
         
@@ -43,19 +45,20 @@ public class TextFileLoader implements Loader
                 fileLine = buffReader.readLine();
             }
             
-            String[] firstLine = this.splitValues(fileLine);
-			
-			String[] colNames = new String[firstLine.length];
+           // String[] firstLine = this.splitValues(fileLine, loadClassAttr);                    
+            		
+            //String[] colNames = new String[firstLine.length];
+             String[] colNames = this.splitValues(fileLine, loadClassAttr);
 
-			for(int i = 0; i < firstLine.length; i++)
-			{
-				colNames[i] = "attr" + (i + 1);
-			}
-			
-			RecordData recData = new RecordData(
-					this.parseData(colNames, firstLine)
-			);
-            tableData.addRecord(recData);
+//            for(int i = 0; i < firstLine.length; i++)
+//            {                
+//                colNames[i] = "attr" + (i + 1);
+//            }
+//			
+//            RecordData recData = new RecordData(
+//                            this.parseData(colNames, firstLine)
+//            );
+//            tableData.addRecord(recData);
             
             tableData.setColumnsNames(colNames);
             
@@ -63,8 +66,8 @@ public class TextFileLoader implements Loader
             {
                 if(fileLine.trim().startsWith("#")) continue;
                 
-                String[] splittedValues = this.splitValues(fileLine);
-                
+                String[] splittedValues = this.splitValues(fileLine, loadClassAttr);
+                                              
                 RecordData recordData = new RecordData(
                         this.parseData(colNames, splittedValues)
                 );
@@ -86,12 +89,22 @@ public class TextFileLoader implements Loader
         return tableData;
     }
     
-    private String[] splitValues(String fileLine)
+    private String[] splitValues(String fileLine, boolean dropLastColumn)
     {
-//        if(fileLine.contains(","))
-//            return fileLine.split(",");
-//        else
-        return fileLine.split("\\s+");
+        if(dropLastColumn == false)
+        {
+            return fileLine.split("\\s+");
+        }
+        
+        String [] SplitValues = fileLine.split("\\s+");
+        String [] SplitValues_pom = new String [SplitValues.length -1];
+
+        for(int i = 0 ; i < SplitValues.length -1; i++)
+        {
+            SplitValues_pom[i] = SplitValues[i];              
+        }
+
+        return SplitValues_pom;                    
     }
     
     private HashMap<String, Object> parseData(

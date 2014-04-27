@@ -21,7 +21,7 @@ import statsapp.data.TableData;
 public class ExcelFileLoader implements Loader
 {
     @Override
-    public TableData loadData(String fileName)
+    public TableData loadData(String fileName, boolean loadClassAttr, String columnClassName)
     {
         Workbook workbook = null;
       

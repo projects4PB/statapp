@@ -20,6 +20,7 @@ import statsapp.popups.ChartPopup;
 import statsapp.popups.ClassifyQuantityPopup;
 import statsapp.popups.CreateObjectPopup;
 import statsapp.popups.DiscretizationPopup;
+import statsapp.popups.GroupingPopup;
 import statsapp.popups.NormalizationPopup;
 import statsapp.popups.StandarizationPopup;
 import statsapp.popups.StatisticsPopup;
@@ -34,11 +35,12 @@ public class RootPanel extends GridPane
 {
     private final DataManager dManager = DataManager.getInstance();
     private final AreaManager areaManager = AreaManager.getInstance();
+    public static RootPanel panelInstance;
     
     public RootPanel()
     {
         MenuBar menuBar = this.createMenuBar();
-        
+        this.panelInstance = this;
         this.add(menuBar, 0, 0);
     }
     
@@ -86,12 +88,12 @@ public class RootPanel extends GridPane
                     }
 					TableData tableData = DataManager
 						.getInstance().loadData(
-							file.getAbsolutePath()
+							file.getAbsolutePath(), false,""
 					);
                     DataTable dataTable = dManager
                             .createDataTable(tableData);
                     
-					areaManager.addTableDataToAreaObjects();
+					//areaManager.addTableDataToAreaObjects();
 
                     add(dataTable, 0, 1);
                 }               
@@ -104,45 +106,8 @@ public class RootPanel extends GridPane
             @Override
             public void handle(ActionEvent e)
             {
-                FileChooser fileChooser = new FileChooser();
-                File file = fileChooser.showOpenDialog(
-                        getScene().getWindow()
-                );
-                
-                if(file != null)
-                {
-                    int index = file.getAbsolutePath().lastIndexOf('.');
-                    
-                    if(index > 0)
-					{
-                        String extension = file.getAbsolutePath()
-								.substring(index + 1);
-						
-						if(extension.equals("xlsx")
-							|| extension.equals("xls"))
-						{
-							DataManager.setDataLoader(
-									new ExcelFileLoader()
-							);
-						}
-						else
-						{
-							DataManager.setDataLoader(
-									new TextFileLoader()
-							);
-						}
-                    }
-					TableData tableData = DataManager
-						.getInstance().loadData(
-							file.getAbsolutePath()
-					);
-                    DataTable dataTable = dManager
-                            .createDataTable(tableData);
-                    
-					areaManager.addTableDataToAreaObjects();
-
-                    add(dataTable, 0, 1);
-                }               
+                GroupingPopup popup = new GroupingPopup();
+                popup.show(getScene().getWindow());
             }
         });
 

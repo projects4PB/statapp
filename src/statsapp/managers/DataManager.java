@@ -89,9 +89,9 @@ public class DataManager
         return this.tableData;
     }
     
-    public TableData loadData(String fileName)
+    public TableData loadData(String fileName, boolean loadClassAttr, String columnClassName)
     {
-        this.tableData = dataLoader.loadData(fileName);
+        this.tableData = dataLoader.loadData(fileName,loadClassAttr, columnClassName);
         
 		this.dataList.removeAll(this.dataList);
 

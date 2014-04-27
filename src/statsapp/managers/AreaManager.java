@@ -89,6 +89,10 @@ public class AreaManager
                 TableRecord tableRecord = (TableRecord)dManager.getDataList().get(i);
                 RecordData recordData = tableRecord.getRecordData();
                 wektor = new  ArrayList<Float>();
+               
+                  for (String colName : colNames){
+                      System.out.print(colName);
+                  }
                 
                 for (String colName : colNames){
                     if(colName.equals("class")== false && colName.contains("_") == false){
