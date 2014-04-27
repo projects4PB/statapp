@@ -7,6 +7,7 @@
 package statsapp.popups;
 
 import java.io.File;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -18,11 +19,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+
 import statsapp.data.TableData;
 import statsapp.loaders.ExcelFileLoader;
 import statsapp.loaders.TextFileLoader;
 import statsapp.managers.AreaManager;
 import statsapp.managers.DataManager;
+import statsapp.models.GroupingType;
 import statsapp.models.MetricType;
 import statsapp.panels.RootPanel;
 import statsapp.tables.DataTable;
@@ -40,13 +43,20 @@ public class GroupingPopup extends BasePopup {
             "metryka L_nieskończoność";
     private static final String METRIC_MANHATTAN =
             "metryka Manhattan"; 
+    private static final String K_AVERAGES_LABEL =
+            "k - średnich"; 
+    private static final String K_MEDIANS_LABEL =
+            "k - medoidów"; 
 
     private MetricType metricChoice ;
-    
-    private String metodGrouping = "";
-    private String columnName = "";
-    private int countClass ;
-    private static File choosedFile;
+
+    private GroupingType groupingMethod;
+
+    private String classColumnName;
+
+	private int numOfClasses;
+
+	private static File choosedFile;
     
     String numberOfNeighbours = "";
     
@@ -63,33 +73,34 @@ public class GroupingPopup extends BasePopup {
         
         contentPane.getStyleClass().add("create-object");
                
-        Label metodGroupingLabel = new Label("Wybierz metode grupowania:");
+        Label metodGroupingLabel = new Label("Mtoda grupowania:");
         metodGroupingLabel.setPrefSize(230, 25);
         contentPane.add(metodGroupingLabel, 0, 2);
         
         ComboBox<String> comboBox = new ComboBox<>();
         ObservableList<String> comboItems = comboBox.getItems();
         
-        comboItems.add("k-srednia");
-        comboItems.add("k-medoidow");
+        comboItems.add(K_AVERAGES_LABEL);
+        comboItems.add(K_MEDIANS_LABEL);
         
-	comboBox.setPrefSize(250, 25);
+		comboBox.setPrefSize(250, 25);
         
         comboBox.valueProperty().addListener(new ChangeListener<String>()
         {
             @Override
-            public void changed(ObservableValue ov, String t, String t1)
+            public void changed(ObservableValue ov,
+				String oldVal, String newVal)
             {
-                switch(t1)
-                {
-                    case "k-srednia" :
-                        metodGrouping = "k-srednia";
-                    break;
+				switch(newVal)
+				{
+					case K_AVERAGES_LABEL:
+						groupingMethod = groupingMethod.K_AVERAGES;
+						break;
 
-                    case "k-medoidow":
-                         metodGrouping = "k-medoidow";
-                    break;                            
-                }   
+					case K_MEDIANS_LABEL:
+						groupingMethod = groupingMethod.K_MEDIANS;
+						break;
+				}
             }    
         });
         
@@ -111,7 +122,7 @@ public class GroupingPopup extends BasePopup {
                 public void changed(ObservableValue<? extends String> ov,
                         String oldVal, String newVal)
                 {
-                    countClass = Integer.parseInt(newVal);
+                    numOfClasses = Integer.parseInt(newVal);
                 }
         });
         
@@ -132,7 +143,7 @@ public class GroupingPopup extends BasePopup {
                 public void changed(ObservableValue<? extends String> ov,
                         String oldVal, String newVal)
                 {
-                    columnName = newVal;
+                    classColumnName = newVal;
                 }
         });
                   
@@ -181,27 +192,34 @@ public class GroupingPopup extends BasePopup {
             }
         });
         
-        
-
-        
-        
         Button loadDataButton = new Button("wczytaj dane");
         loadDataButton.setOnAction(new EventHandler<ActionEvent>()
         {
             @Override
             public void handle(ActionEvent e)
             {
-                TableData tableData = DataManager
-                .getInstance().loadData(
-                        choosedFile.getAbsolutePath(), true, columnName
-                                    );
+                TableData tableData = DataManager.getInstance()
+					.loadData(
+						choosedFile.getAbsolutePath(),
+						true, classColumnName
+					);
+
                 DataTable dataTable = dManager
                         .createDataTable(tableData);
 
-                                    areaManager.addTableDataToAreaObjects();
+                areaManager.addTableDataToAreaObjects();
 
-                RootPanel panelInstance =  RootPanel.panelInstance;                     
-                panelInstance.add(dataTable, 0, 1); 
+				// utworz nowe zbiory
+				areaManager.initializeObjectsSets(numOfClasses);
+
+				// przypisz obiekty fo odpowiednich zbiorow
+				areaManager.assignObjectsToSets(groupingMethod,
+					metricChoice.METRIC_EUKLIDES);
+
+				// wypisz klasy przypisane obiektom
+				areaManager.getAreaObjectsClasses();
+
+                RootPanel.panelInstance.add(dataTable, 0, 1); 
             }
         });
         
@@ -214,7 +232,6 @@ public class GroupingPopup extends BasePopup {
                 hide();
             }
         });
-        
         
         chooseFileButton.setPrefSize(185, 25); 
         loadDataButton.setPrefSize(185, 25); 

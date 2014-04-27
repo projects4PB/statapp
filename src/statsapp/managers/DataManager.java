@@ -197,7 +197,7 @@ public class DataManager
         return sortedData;
     }
     
-    public float getAverage(String col_id)
+	public float getAverage(String col_id)
     {
         ArrayList<Object> colData = this.getColumnData(col_id);
         
@@ -212,6 +212,17 @@ public class DataManager
         return amount / this.dataList.size();
     }
     
+    public float getAverage(ArrayList<Float> values)
+    {
+        float amount = 0;
+        
+        for(Float value : values)
+        {
+            amount += value;
+        }
+        return amount / values.size();
+    }
+
     public float getMedian(String col_id)
     {
         if(!this.isNumbericColumn(col_id)) return -1;
@@ -253,7 +264,25 @@ public class DataManager
         else return (float) sortedData.get(sortedData.size() / 2);
     }
     
-    public float getMinValue(String col_id)
+    public float getMedian(ArrayList<Float> values)
+    {
+		Collections.sort(values);
+
+        if(values.size() % 2 == 0)
+        { 
+            int secondValueIndex = values.size() / 2;
+            int firstValueIndex = secondValueIndex - 1;
+            
+            float firstValue = (float) values.get(firstValueIndex);
+            
+            float secondValue = (float) values.get(secondValueIndex);
+            
+            return (firstValue + secondValue) / 2;
+        }
+        else return (float) values.get(values.size() / 2);
+    }
+    
+	public float getMinValue(String col_id)
     {
         ArrayList<Object> colData = this.getColumnData(col_id);
         

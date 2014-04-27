@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.math.array.LinearAlgebra;
 
@@ -16,6 +17,7 @@ import statsapp.data.RecordData;
 import statsapp.data.TableData;
 import statsapp.data.records.TableRecord;
 import statsapp.models.AreaObject;
+import statsapp.models.GroupingType;
 import statsapp.models.MetricType;
 import statsapp.models.ObjectsSet;
 
@@ -90,10 +92,6 @@ public class AreaManager
                 RecordData recordData = tableRecord.getRecordData();
                 wektor = new  ArrayList<Float>();
                
-                  for (String colName : colNames){
-                      System.out.print(colName);
-                  }
-                
                 for (String colName : colNames){
                     if(colName.equals("class")== false && colName.contains("_") == false){
                         Object obj = recordData.getFields().get(colName);
@@ -252,14 +250,92 @@ public class AreaManager
             return quantity;
         }
 
-		public void assignObjectToSet(
+		public void initializeObjectsSets(int numOfSets)
+		{
+			Random random = new Random();
+
+			// utworz nowe zbiory z losowymi srodkami
+			for(int i = 0; i < numOfSets; i++)
+			{
+				int rndIndex = random.nextInt(this.areaObjects.size());
+
+				AreaObject averagePoint = this.areaObjects.get(rndIndex);
+
+				this.objectsSets.add(new ObjectsSet(
+							averagePoint, "" + (i + 1)));
+			}
+		}
+
+		public void assignObjectsToSets(
+				GroupingType groupingType, MetricType metricType)
+		{
+			boolean flagSetsStateChanged = true;
+
+			while(flagSetsStateChanged)
+			{
+				// inicjujemy wartosc flagi na false
+				flagSetsStateChanged = false;
+				
+				for(AreaObject areaObj : this.areaObjects)
+				{
+					// zbior do ktorego aktualnie nalezy obiekt
+					ObjectsSet objSet = areaObj.getAreaObjectSet();
+
+					// zbior do ktorego zostal przypisany obiekt
+					ObjectsSet assignedSet =
+						this.assignObjectToSet(
+								areaObj, metricType
+						);
+
+					// jesli nastapila zmiana zbioru
+					// to ustaw wartosc flagi na true
+					if(objSet != assignedSet)
+					{
+						flagSetsStateChanged = true;
+					}
+				}
+				// jesli byly jakies zmiany
+				// ustal nowe srodki zbiorow
+				if(!flagSetsStateChanged)
+				{
+					this.recalculateSetsAveragePoints(groupingType);
+				}
+			}
+		}
+
+		public void recalculateSetsAveragePoints(GroupingType groupingType)
+		{
+			// przelicz srodki dla wszystkich zbiorow
+			for(ObjectsSet objSet : this.objectsSets)
+			{
+				objSet.calculateAveragePoint(groupingType);
+			}
+		}
+
+		public ObjectsSet assignObjectToSet(
 				AreaObject areaObj, MetricType metricType)
 		{
-			ObjectsSet assignSet = this.objectsSets.get(0);
+			ObjectsSet objSet = areaObj.getAreaObjectSet();
+			
+			if(objSet == null)
+			{
+				// przypisz obiekt do losowego zbioru
+				Random random = new Random();
+				
+				int rndIndex = random.nextInt(
+						this.objectsSets.size());
+
+				objSet = this.objectsSets.get(rndIndex);
+				
+				objSet.addAreaObject(areaObj);
+			}
+
+			ObjectsSet assignSet = objSet;
 			
 			double minLength = this.calculateObjectToSetLength(
 					areaObj, assignSet, metricType);
 
+			// ustal najblizej jakiego zbioru znajduje sie obiekt
 			for(int i = 1; i < this.objectsSets.size(); i++)
 			{
 				ObjectsSet objsSet = this.objectsSets.get(i);
@@ -274,7 +350,24 @@ public class AreaManager
 					assignSet = objsSet;
 				}
 			}
-			assignSet.addAreaObject(areaObj);
+
+			// przypisz obiekt do odpowiedniego zbioru
+			if(objSet != assignSet)
+			{
+				objSet.removeAreaObject(areaObj);
+
+				assignSet.addAreaObject(areaObj);
+			}
+
+			return assignSet;
+		}
+
+		public void getAreaObjectsClasses()
+		{
+			for(AreaObject areaObj : this.areaObjects)
+			{
+				System.out.println(areaObj.getAreaObjectClass());
+			}
 		}
 
        public static HashMap sortByValues(HashMap map) 
@@ -407,10 +500,4 @@ public class AreaManager
         
 		return Math.sqrt(result[0][0]);
     }
-
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return super.toString();
-	}
 }
